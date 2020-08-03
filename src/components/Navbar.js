@@ -5,6 +5,7 @@ import axios from 'axios';
 import {Link} from 'react-router-dom';
 
 import  '../App.css';
+
 const Navbar=(props)=>{
     const [photos,setPhotos] = useState("");
     const [clientID,setclientID]=useState("aIm_jtHHfMfKUpYQnUY28AdAW5BjGLxcxkYDpuAWavA");
@@ -12,9 +13,12 @@ const Navbar=(props)=>{
 
     const [image,setImage]=useState({
         Uri:'',
-        isOpen:false
+        isOpen:false,
+        index:0,
+        nextindex:6
     });
- const {Uri,isOpen} =image;
+    
+ const {Uri,isOpen,index,nextindex} =image;
 
     function handleChange(event){
         setPhotos(event.target.value);
@@ -31,6 +35,8 @@ const Navbar=(props)=>{
             setResult(response.data.results);
 
     })
+    setImage({index:0,
+    nextindex:6});
 
     }
     function handleSubmitkey(event){
@@ -46,15 +52,25 @@ const Navbar=(props)=>{
 
     })}
 
+    setImage({index:0,
+        nextindex:6});
     }
     
     
     function getData(rowData){
         
         setImage({Uri:rowData,
-            isOpen: !isOpen});
+            isOpen: !isOpen,
+            index:index,
+            nextindex:nextindex});
         }
-
+    function onLoadMore(){
+        setImage({
+            index:nextindex,
+            nextindex:nextindex+6
+        })
+        
+    }   
     
     
     
@@ -65,30 +81,37 @@ const Navbar=(props)=>{
         <nav>
             
 
-            <div><input onChange={handleChange} type="text" name="photo"
+            <div className='row3'>
+                <input onChange={handleChange} 
+                className="row4" 
+                type="text" name="photo"
              placeholder="Search for photos..."
              onKeyPress={handleSubmitkey}
-             /></div>
-      <div><button onClick={handleSubmit} type="submit">Search</button></div>
+             />
+      <button onClick={handleSubmit} type="submit"><i className="fa fa-search"></i></button>
+      </div>
             
       </nav>
       
+
       <div className="row0">
            
           
           { 
-            result.map((photos) => 
+            result.slice(index,nextindex).map((photos,i) => 
             (
-            <Landing rowData={photos} key={photos.id} handleClick={getData} />
-               ))
+            <Landing rowData={photos} key={i} handleClick={getData} />
+               )
+               )
+               
            }
-          
-       
+           
         </div>
-
-
-
-
+        <div className="row5">
+        <button onClick={onLoadMore} type="submit" >Load More</button>
+        </div>
+        
+        
         {isOpen ? (        
             <Full_Img img_link={Uri}  />
             ) : (
@@ -96,9 +119,6 @@ const Navbar=(props)=>{
             )}
         
 
-            
-
-         
          </Fragment>
     )
 
